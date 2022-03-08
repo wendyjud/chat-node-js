@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Chat</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font: 13px Helvetica, Arial; background-color: rgb(0, 0, 0); color: aliceblue; }
+        form { background: rgb(  40, 116, 166  ); padding: 3px; position: fixed; bottom: 0; width: 100%; border-color: rgb( 46, 64, 83 ); border-top-style: solid; border-top-width: 5%;}
+        form input { border-style: solid; border-width: 1px; padding: 10px; width: 85%; margin-right: .5%; }
+        form button { width: 9%; background: rgb(30, 97, 221); border: none; padding: 10px; margin-left: 2%; border-radius: 15px;
+          border: 2px solid #e7e7e7;}
+        #messages { list-style-type: circle; margin: 0; padding: 0; }
+        #messages li { padding: 5px 10px; }
+        #messages li:nth-child(odd) { background: rgb( 46, 64, 83 ); }
+        h1{
+          color:rgb(255, 255, 255);
+        }
+    </style>
+    <script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="../../socket.io/socket.io.js"></script>
+  </head>
+  <body>
+    <h1>Bienvenido a Comunichat!</h1>
+    <ul id="messages"></ul>
+    <div id="contenedor">
+      <form action="/" method="POST" id="chatForm">
+        <input id="txt" autocomplete="off" autofocus="on" oninput="isTyping()" placeholder="Escribe tu mensaje aquí..." /><button>Enviar</button>
+      </form>
+      <script>
+              var socket = io.connect('http://localhost:3000');
+              // enviar mensaje de texto sin recargar/reiniciar la página
+              $('form').submit(function(e){
+                  e.preventDefault(); // evitar recarga página
+                  socket.emit('chat_message', $('#txt').val());
+                  $('#txt').val('');
+                  return false;
+              });
+              // Añadir mensaje texto al chat
+              socket.on('chat_message', function(msg){
+                  $('#messages').append($('<li>').html(msg));
+              });
+              // Añadir texto si alguien está online
+              socket.on('is_online', function(username) {
+                  $('#messages').append($('<li>').html(username));
+              });
+              // Preguntar el nombre de usuario
+              var username = prompt('Estas entrando al chat como invitado ingresa tu nombre, por favor');
+              socket.emit('username', username);
+      </script>
+
+    </div>
+    
+  </body>
+</html>
