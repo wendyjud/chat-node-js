@@ -2,7 +2,7 @@ const express = require("express");
 const app = express();
 const http = require("http").Server(app);
 const io = require("socket.io")(http);
-
+var PORT = process.env.PORT || 3000;
 app.get("/", function(req, res) {
   res.render("index.ejs");
 });
@@ -27,7 +27,6 @@ io.sockets.on("connection", function(socket) {
     );
   });
 });
-
-const server = http.listen(3000, function() {
-  console.log("oyendo en *:3000");
+const server = http.listen(PORT, function() {
+  console.log("Chat en funcionamiento");
 });
